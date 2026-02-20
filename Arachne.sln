@@ -10,6 +10,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crawler", "src\Crawler\Craw
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PageProcessor", "src\PageProcessor\PageProcessor.csproj", "{D13B4A68-99E4-4496-89EE-889011494C82}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arachne.Builder", "src\Arachne.Builder\Arachne.Builder.csproj", "{1772430F-4877-4C14-9CCC-47A264A6906E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SendBox", "src\SendBox\SendBox.csproj", "{018B3E7E-BAC9-4D1B-A28B-36D3FD3B89BF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +36,14 @@ Global
 		{D13B4A68-99E4-4496-89EE-889011494C82}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D13B4A68-99E4-4496-89EE-889011494C82}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D13B4A68-99E4-4496-89EE-889011494C82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1772430F-4877-4C14-9CCC-47A264A6906E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1772430F-4877-4C14-9CCC-47A264A6906E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1772430F-4877-4C14-9CCC-47A264A6906E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1772430F-4877-4C14-9CCC-47A264A6906E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{018B3E7E-BAC9-4D1B-A28B-36D3FD3B89BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{018B3E7E-BAC9-4D1B-A28B-36D3FD3B89BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{018B3E7E-BAC9-4D1B-A28B-36D3FD3B89BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{018B3E7E-BAC9-4D1B-A28B-36D3FD3B89BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{873BE23D-F4FD-4053-87F4-95F4C20EA85D} = {CC0A6039-2686-451A-904F-03F3C65117FE}

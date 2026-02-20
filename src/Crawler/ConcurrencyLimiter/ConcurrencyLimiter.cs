@@ -1,19 +1,13 @@
 ﻿using Arachne.Abstractions.Interfaces.Crawler;
+using Arachne.Abstractions.Models.Options;
 
 namespace Crawler.ConcurrencyLimiter;
 
-public class ConcurrencyLimiter : IConcurrencyLimiter
+public class ConcurrencyLimiter(CrawlerOptions options) : IConcurrencyLimiter
 {
-    private readonly SemaphoreSlim _semaphore;
-    public int MaxConcurrency { get; }
+    private readonly SemaphoreSlim _semaphore = new(options.MaxConcurrency);
+    public int MaxConcurrency { get; } = options.MaxConcurrency;
     public int CurrentCount => _semaphore.CurrentCount;
-
-    public ConcurrencyLimiter(int maxConcurrency = 1)
-    {
-        ArgumentOutOfRangeException.ThrowIfLessThan(maxConcurrency, 1);
-        MaxConcurrency = maxConcurrency;
-        _semaphore = new SemaphoreSlim(maxConcurrency);
-    }
 
     public async Task<IDisposable> WaitAsync(CancellationToken cancellationToken = default)
     {

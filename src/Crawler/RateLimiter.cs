@@ -1,21 +1,16 @@
 ﻿using System.Diagnostics;
 using Arachne.Abstractions.Interfaces.Crawler;
+using Arachne.Abstractions.Models.Options;
 
 namespace Crawler;
 
-public class RateLimiter : IRateLimiter
+public class RateLimiter(CrawlerOptions options) : IRateLimiter
 {
     private readonly Lock _lock = new();
     private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
-    public int MaxRps { get; private set; }
+    public int MaxRps { get; private set; } = options.MaxRps;
     public int CurrentRps { get; private set; }
 
-    public RateLimiter(int maxRps = int.MaxValue)
-    {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxRps);
-        MaxRps = maxRps;
-    }
-    
     public void ChangeRps(int newRps)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(newRps);

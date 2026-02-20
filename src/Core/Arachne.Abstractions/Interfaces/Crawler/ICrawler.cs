@@ -10,7 +10,13 @@ public interface ICrawler
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task CrawlAsync(CancellationToken cancellationToken = default);
+    Task StartAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Stops crawling process.
+    /// </summary>
+    /// <returns></returns>
+    Task StopAsync();
 
     /// <summary>
     /// Adds a crawl job to the queue and starts a crawling process if not started yet.
