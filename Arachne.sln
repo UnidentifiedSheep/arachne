@@ -1,8 +1,33 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{CC0A6039-2686-451A-904F-03F3C65117FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arachne.Abstractions", "src\Core\Arachne.Abstractions\Arachne.Abstractions.csproj", "{873BE23D-F4FD-4053-87F4-95F4C20EA85D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fetcher", "src\Fetcher\Fetcher.csproj", "{27032ED5-058F-449E-ADB7-9F8E5618D2AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crawler", "src\Crawler\Crawler.csproj", "{4F1E3BC3-6A58-499F-898D-2F7449C81CB2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{873BE23D-F4FD-4053-87F4-95F4C20EA85D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{873BE23D-F4FD-4053-87F4-95F4C20EA85D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{873BE23D-F4FD-4053-87F4-95F4C20EA85D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{873BE23D-F4FD-4053-87F4-95F4C20EA85D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27032ED5-058F-449E-ADB7-9F8E5618D2AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27032ED5-058F-449E-ADB7-9F8E5618D2AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27032ED5-058F-449E-ADB7-9F8E5618D2AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27032ED5-058F-449E-ADB7-9F8E5618D2AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F1E3BC3-6A58-499F-898D-2F7449C81CB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F1E3BC3-6A58-499F-898D-2F7449C81CB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F1E3BC3-6A58-499F-898D-2F7449C81CB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F1E3BC3-6A58-499F-898D-2F7449C81CB2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{873BE23D-F4FD-4053-87F4-95F4C20EA85D} = {CC0A6039-2686-451A-904F-03F3C65117FE}
 	EndGlobalSection
 EndGlobal
