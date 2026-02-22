@@ -1,5 +1,4 @@
-﻿using Arachne.Abstractions.EventArgs;
-using Arachne.Abstractions.Models.Fetcher;
+﻿using Arachne.Abstractions.Models.Fetcher;
 
 namespace Arachne.Abstractions.Interfaces.Crawler;
 
@@ -24,14 +23,4 @@ public interface ICrawler
     /// <param name="context">Context for fetch request.</param>
     /// <returns>True if a job was added, otherwise false.</returns>
     bool AddCrawlJob(FetcherContext context);
-    
-    /// <summary>
-    /// Fired when fetch is completed.
-    /// </summary>
-    event EventHandler<FetcherResultEventArgs> OnFetchCompleted;
-    
-    /// <summary>
-    /// Fired when fetch failed.
-    /// </summary>
-    event EventHandler<FetcherFaultEventArgs> OnFetchFaulted;
 }

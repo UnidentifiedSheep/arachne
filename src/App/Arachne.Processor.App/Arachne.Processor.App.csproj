@@ -7,12 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Core\Arachne.Abstractions\Arachne.Abstractions.csproj" />
-      <ProjectReference Include="..\Core\Arachne.Contracts\Arachne.Contracts.csproj" />
+      <ProjectReference Include="..\..\Core\Arachne.Abstractions\Arachne.Abstractions.csproj" />
+      <ProjectReference Include="..\Arachne.App.Base\Arachne.App.Base.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="MassTransit.Abstractions" Version="8.5.8" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
     </ItemGroup>
 
 </Project>

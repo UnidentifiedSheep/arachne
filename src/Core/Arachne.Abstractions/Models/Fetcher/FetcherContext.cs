@@ -5,6 +5,7 @@ namespace Arachne.Abstractions.Models.Fetcher;
 
 public sealed class FetcherContext
 {
+    public readonly Guid Id = Guid.NewGuid();
     public string Url { get; }
     public HttpMethod Method { get; }
     public int RetryCount { get; }

@@ -12,6 +12,6 @@ public class SendMiddleware(HttpClient defaultClient) : IFetcherMiddleware
         using var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token);
         var content = await response.Content.ReadAsStringAsync(token);
 
-        return new FetcherResult(content, response.StatusCode);
+        return new FetcherResult(content, response.StatusCode, context);
     }
 }

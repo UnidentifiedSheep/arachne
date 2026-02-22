@@ -1,17 +1,17 @@
 ﻿using System.Threading.Channels;
-using Arachne.Abstractions.EventArgs;
 using Arachne.Abstractions.Interfaces.Crawler;
 using Arachne.Abstractions.Interfaces.Fetcher.Pipeline;
 using Arachne.Abstractions.Models.Fetcher;
+using Arachne.Contracts.Events;
+using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Crawler;
 
-public sealed class Crawler(IServiceProvider serviceProvider, IRateLimiter rateLimiter, IConcurrencyLimiter concurrencyLimiter)
+public sealed class Crawler(IServiceProvider serviceProvider, IRateLimiter rateLimiter, IConcurrencyLimiter concurrencyLimiter) 
     : ICrawler, IAsyncDisposable
 {
-    private readonly Channel<FetcherContext> _channel =
-        Channel.CreateUnbounded<FetcherContext>();
+    private readonly Channel<FetcherContext> _channel = Channel.CreateUnbounded<FetcherContext>();
 
     private readonly List<Task> _runningTasks = [];
     private readonly Lock _tasksLock = new();
@@ -64,17 +64,21 @@ public sealed class Crawler(IServiceProvider serviceProvider, IRateLimiter rateL
     {
         using var lease = await concurrencyLimiter.WaitAsync(token);
         await using var scope = serviceProvider.CreateAsyncScope();
+        var publishEndpoint = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
         var pipelineExecutor = scope.ServiceProvider.GetRequiredService<IPipelineExecutor>();
         
         try
         {
             var result = await pipelineExecutor.ExecutePipeline(context, token);
-            OnFetchCompleted?.Invoke(this,
-                new FetcherResultEventArgs(result));
+            await publishEndpoint.Publish(new FetchCompletedEvent { Result = result }, token);
         }
         catch (Exception ex)
         {
-            OnFetchFaulted?.Invoke(this, new FetcherFaultEventArgs(ex));
+            await publishEndpoint.Publish(new FetchFaultedEvent
+            {
+                Context = context,
+                Exception = ex
+            }, token);
         }
     }
 
@@ -98,8 +102,4 @@ public sealed class Crawler(IServiceProvider serviceProvider, IRateLimiter rateL
         await StopAsync();
         _cts?.Dispose();
     }
-
-
-    public event EventHandler<FetcherResultEventArgs>? OnFetchCompleted;
-    public event EventHandler<FetcherFaultEventArgs>? OnFetchFaulted;
 }

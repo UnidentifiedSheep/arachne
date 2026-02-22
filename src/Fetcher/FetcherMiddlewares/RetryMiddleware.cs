@@ -23,7 +23,7 @@ public class RetryMiddleware : IFetcherMiddleware
             delayMs = await Delay(delayMs, context.DelayMultiplier, token);
         }
 
-        return new FetcherResult(null, lastStatus);
+        return new FetcherResult(null, lastStatus, context);
     }
     
     /// <summary>
