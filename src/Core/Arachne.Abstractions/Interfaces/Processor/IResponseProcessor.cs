@@ -1,6 +1,6 @@
 ﻿using Arachne.Abstractions.Models.Fetcher;
 
-namespace Arachne.Abstractions.Interfaces.ResponseProcessor;
+namespace Arachne.Abstractions.Interfaces.Processor;
 
 public interface IResponseProcessor
 {

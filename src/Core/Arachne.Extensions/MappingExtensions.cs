@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using Arachne.Contracts.Models;
 using ModelFetcherContext = Arachne.Abstractions.Models.Fetcher.FetcherContext;
+using ModelFetcherResult = Arachne.Abstractions.Models.Fetcher.FetcherResult;
 
 namespace Arachne.Extensions;
 
@@ -12,7 +13,7 @@ public static class MappingExtensions
         {
             Context = model.Context.ToContract(),
             Result = model.Result,
-            StatusCode = model.StatusCode
+            StatusCode = (int)model.StatusCode
         };
     }
 
@@ -43,5 +44,10 @@ public static class MappingExtensions
         foreach (var (key, v) in value.QueryParameters) model.WithQuery(key, v);
         model.WithProcessorTags(value.ProcessorTags);
         return model;
+    }
+
+    public static ModelFetcherResult ToModel(this FetcherResult value)
+    {
+        return new ModelFetcherResult(value.Result, (HttpStatusCode)value.StatusCode, value.Context.ToModel());
     }
 }
