@@ -1,12 +1,13 @@
 ﻿using Arachne.Abstractions.Interfaces.Crawler;
 using Arachne.Abstractions.Interfaces.HostBuilderConfigurator;
+using Arachne.Abstractions.Interfaces.HostBuilders;
 using Crawler;
 using Crawler.ConcurrencyLimiter;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Arachne.Crawler.App.Builders;
 
-internal class CrawlerConfigurator(IServiceCollection services) : ICrawlerConfigurator
+internal class CrawlerConfigurator : ICrawlerConfigurator, IConfigurator
 {
     public Type RateLimiterType = typeof(RateLimiter);
     public Type ConcurrencyLimiterType = typeof(ConcurrencyLimiter);
@@ -30,10 +31,10 @@ internal class CrawlerConfigurator(IServiceCollection services) : ICrawlerConfig
         return this;
     }
 
-    public void Build()
+    public void Build(IAppHostBuilder builder)
     {
-        services.AddSingleton(typeof(IRateLimiter), RateLimiterType);
-        services.AddSingleton(typeof(IConcurrencyLimiter), ConcurrencyLimiterType);
-        services.AddSingleton(typeof(ICrawler), CrawlerType);
+        builder.Services.AddSingleton(typeof(IRateLimiter), RateLimiterType);
+        builder.Services.AddSingleton(typeof(IConcurrencyLimiter), ConcurrencyLimiterType);
+        builder.Services.AddSingleton(typeof(ICrawler), CrawlerType);
     }
 }

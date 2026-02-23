@@ -1,5 +1,4 @@
 ﻿using Arachne.Abstractions.Interfaces.Crawler;
-using Arachne.Abstractions.Models.Fetcher;
 using Arachne.Contracts.Events;
 using Arachne.Extensions;
 using MassTransit;

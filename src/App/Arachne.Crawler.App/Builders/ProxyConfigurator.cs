@@ -1,12 +1,13 @@
 ﻿using Arachne.Abstractions.Interfaces.Fetcher.Proxy;
 using Arachne.Abstractions.Interfaces.HostBuilderConfigurator;
+using Arachne.Abstractions.Interfaces.HostBuilders;
 using Fetcher.Proxy;
 using Fetcher.Proxy.Rotators;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Arachne.Crawler.App.Builders;
 
-internal class ProxyConfigurator(IServiceCollection services) : IProxyConfigurator
+internal class ProxyConfigurator : IProxyConfigurator, IConfigurator
 {
     public Type ProxyContainerType { get; private set; } = typeof(ProxyContainer);
     public Type ProxyRotatorType { get; private set; } = typeof(RoundRobinProxyRotator);
@@ -30,10 +31,10 @@ internal class ProxyConfigurator(IServiceCollection services) : IProxyConfigurat
         return this;
     }
 
-    public void Build()
+    public void Build(IAppHostBuilder builder)
     {
-        services.AddSingleton(typeof(IProxyContainer), ProxyContainerType);
-        services.AddSingleton(typeof(IProxyRotator), ProxyRotatorType);
-        services.AddSingleton(typeof(IProxyClientMapper), ProxyClientMapper);
+        builder.Services.AddSingleton(typeof(IProxyContainer), ProxyContainerType);
+        builder.Services.AddSingleton(typeof(IProxyRotator), ProxyRotatorType);
+        builder.Services.AddSingleton(typeof(IProxyClientMapper), ProxyClientMapper);
     }
 }

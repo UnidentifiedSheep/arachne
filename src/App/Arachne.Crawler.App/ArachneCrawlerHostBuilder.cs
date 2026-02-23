@@ -1,29 +1,21 @@
-﻿using Arachne.Abstractions.Interfaces.HostBuilderConfigurator;
+﻿using Arachne.Abstractions.Abstractions;
+using Arachne.Abstractions.Interfaces.HostBuilderConfigurator;
 using Arachne.Crawler.App.Builders;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Arachne.Crawler.App;
 
-public sealed class ArachneCrawlerHostBuilder
+public sealed class ArachneCrawlerHostBuilder : AppHostBuilder<ArachneCrawlerApp>
 {
-    public IServiceCollection Services { get; } = new ServiceCollection();
+    public override IServiceCollection Services { get; } = new ServiceCollection();
 
     private bool _built;
     
-    private readonly ProxyConfigurator _proxyConfigurator;
-    private readonly UserAgentConfigurator _agentConfigurator;
-    private readonly FetcherConfigurator _fetcherConfigurator;
-    private readonly CrawlerConfigurator _crawlerConfigurator;
-    private readonly CrawlerOptionsConfigurator _crawlerOptionsConfigurator;
-    
-    public ArachneCrawlerHostBuilder()
-    {
-        _proxyConfigurator = new ProxyConfigurator(Services);
-        _agentConfigurator = new UserAgentConfigurator(Services);
-        _fetcherConfigurator = new FetcherConfigurator(Services);
-        _crawlerConfigurator = new CrawlerConfigurator(Services);
-        _crawlerOptionsConfigurator = new CrawlerOptionsConfigurator(Services);
-    }
+    private readonly ProxyConfigurator _proxyConfigurator = new();
+    private readonly UserAgentConfigurator _agentConfigurator = new();
+    private readonly FetcherConfigurator _fetcherConfigurator = new();
+    private readonly CrawlerConfigurator _crawlerConfigurator = new();
+    private readonly CrawlerOptionsConfigurator _crawlerOptionsConfigurator = new();
 
     public ArachneCrawlerHostBuilder ConfigureFetcher(Action<IFetcherConfigurator> configureFetcher)
     {
@@ -55,16 +47,16 @@ public sealed class ArachneCrawlerHostBuilder
         return this;
     }
 
-    public ArachneCrawlerApp Build()
+    public override ArachneCrawlerApp Build()
     {
         if (_built) throw new InvalidOperationException("HostBuilder can only be built once.");
         
         _built = true;
-        _proxyConfigurator.Build();
-        _agentConfigurator.Build();
-        _crawlerConfigurator.Build();
-        _crawlerOptionsConfigurator.Build();
-        _fetcherConfigurator.Build();
+        _proxyConfigurator.Build(this);
+        _agentConfigurator.Build(this);
+        _crawlerConfigurator.Build(this);
+        _crawlerOptionsConfigurator.Build(this);
+        _fetcherConfigurator.Build(this);
         
         return new ArachneCrawlerApp(Services);
     }

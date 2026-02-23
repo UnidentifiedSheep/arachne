@@ -10,7 +10,7 @@ public class FetchCompletedConsumer(IResponseDispatcher dispatcher) : IConsumer<
 {
     public async Task Consume(ConsumeContext<FetchCompletedEvent> context)
     {
-        FetcherResult fetchResult = context.Message.Result.ToModel();
+        ReadonlyFetcherResult fetchResult = context.Message.Result.ToReadonlyModel();
         await dispatcher.DispatchAsync(fetchResult);
     }
 }

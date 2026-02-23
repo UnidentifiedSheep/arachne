@@ -1,6 +1,7 @@
 ﻿using Arachne.Abstractions.Interfaces;
 using Arachne.Abstractions.Interfaces.App;
 using Arachne.App.Base.ExceptionHandlers;
+using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Arachne.App.Base;
@@ -49,8 +50,16 @@ public abstract class BaseApp : IApp
         services.AddSingleton<BasicExceptionHandler>();
         services.AddSingleton<IExceptionHandler>(sp => sp.GetRequiredService<BasicExceptionHandler>());
     }
-    
 
+    protected async Task RunBus(CancellationToken token = default)
+    {
+        var bus = Services.GetRequiredService<IBusControl>();
+
+        await bus.StartAsync(token);
+
+        await using var registration = token.Register(() =>
+            bus.StopAsync(CancellationToken.None).GetAwaiter().GetResult());
+    }
 
     public virtual void WithExceptionHandler<THandler>() where THandler : IExceptionHandler
     {

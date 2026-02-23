@@ -13,9 +13,10 @@ public sealed class ArachneProcessorApp : BaseApp
         _provider = services.BuildServiceProvider(validateScopes: true);
     }
 
-    public override Task RunAsync(CancellationToken cancellationToken = default)
+    public override async Task RunAsync(CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        await RunBus(cancellationToken);
+        await Task.Delay(Timeout.Infinite, cancellationToken);
     }
     
     public override async ValueTask DisposeAsync()

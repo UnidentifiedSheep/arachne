@@ -1,5 +1,7 @@
 ﻿using System.Net;
-using Arachne.Contracts.Models;
+using Arachne.Abstractions.Models.Fetcher;
+using FetcherContext = Arachne.Contracts.Models.FetcherContext;
+using FetcherResult = Arachne.Contracts.Models.FetcherResult;
 using ModelFetcherContext = Arachne.Abstractions.Models.Fetcher.FetcherContext;
 using ModelFetcherResult = Arachne.Abstractions.Models.Fetcher.FetcherResult;
 
@@ -7,7 +9,7 @@ namespace Arachne.Extensions;
 
 public static class MappingExtensions
 {
-    public static FetcherResult ToContract(this Abstractions.Models.Fetcher.FetcherResult model)
+    public static FetcherResult ToContract(this ModelFetcherResult model)
     {
         return new FetcherResult
         {
@@ -50,4 +52,18 @@ public static class MappingExtensions
     {
         return new ModelFetcherResult(value.Result, (HttpStatusCode)value.StatusCode, value.Context.ToModel());
     }
+
+    public static ReadonlyFetcherResult ToReadonlyModel(this FetcherResult value)
+    {
+        return new ReadonlyFetcherResult(value.Result, (HttpStatusCode)value.StatusCode, value.Context.ToReadonlyModel());
+    }
+
+    public static ReadonlyFetcherContext ToReadonlyModel(this FetcherContext value)
+    {
+        var method = HttpMethod.Parse(value.Method);
+        var retryOn = value.RetryOn.Select(x => (HttpStatusCode)x);
+        return new ReadonlyFetcherContext(value.Id, value.Url, method, value.RetryCount, value.DelayMs, value.DelayMultiplier,
+            retryOn, value.Headers.ToDictionary(), value.QueryParameters.ToDictionary(), value.ProcessorTags);
+    }
+    
 }

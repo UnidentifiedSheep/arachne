@@ -7,7 +7,7 @@ public class BasicExceptionHandler(ILogger<BasicExceptionHandler> logger) : IExc
 {
     public Task HandleAsync(Exception exception)
     {
-        logger.LogError(exception, "Unhandled exception caught at: {dt}", DateTime.UtcNow);
+        logger.LogError(exception, "Unhandled exception caught.");
         return Task.CompletedTask;
     }
 }

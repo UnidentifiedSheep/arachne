@@ -1,5 +1,6 @@
 ﻿using Arachne.Abstractions.Interfaces.Crawler;
 using Arachne.App.Base;
+using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Arachne.Crawler.App;
@@ -17,9 +18,10 @@ public sealed class ArachneCrawlerApp : BaseApp
     
     public override async Task RunAsync(CancellationToken token = default)
     {
+        await RunBus(token);
         var crawler = _provider.GetRequiredService<ICrawler>();
-        
         await crawler.StartAsync(token);
+
         await Task.Delay(Timeout.Infinite, token);
     }
 

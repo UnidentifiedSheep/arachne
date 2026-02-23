@@ -17,15 +17,25 @@ public class TagContainer : ITagContainer
         });
     }
 
+    public void Add<TProcess>(params string[] tags) where TProcess : IResponseProcessor
+    {
+        foreach (var tag in tags)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(tag);
+            Add<TProcess>(tag);
+        }
+    }
+
     public IReadOnlyList<Type> GetProcessors(string tag)
     {
-        return _mapping.TryGetValue(tag, out var processors) ? processors : [];
+        return _mapping.GetValueOrDefault(tag) ?? [];
     }
 
     public IReadOnlyList<Type> GetProcessors(IEnumerable<string> tags)
     {
-        var processors = new List<Type>();
-        foreach (var tag in tags) processors.AddRange(GetProcessors(tag));
-        return processors;
+        var processors = new HashSet<Type>();
+        foreach (var tag in tags) processors.UnionWith(GetProcessors(tag));
+        
+        return processors.ToList();
     }
 }

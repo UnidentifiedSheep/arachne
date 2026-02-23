@@ -1,10 +1,11 @@
 ﻿using Arachne.Abstractions.Interfaces.HostBuilderConfigurator;
+using Arachne.Abstractions.Interfaces.HostBuilders;
 using Arachne.Abstractions.Models.Options;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Arachne.Crawler.App.Builders;
 
-internal class CrawlerOptionsConfigurator(IServiceCollection services) : ICrawlerOptionsConfigurator
+internal class CrawlerOptionsConfigurator : ICrawlerOptionsConfigurator, IConfigurator
 {
     public int MaxRps { get; private set; } = int.MaxValue;
     public int MaxConcurrency { get; private set; } = 1;
@@ -23,9 +24,9 @@ internal class CrawlerOptionsConfigurator(IServiceCollection services) : ICrawle
         return this;
     }
 
-    public void Build()
+    public void Build(IAppHostBuilder builder)
     {
-        services.AddSingleton<CrawlerOptions>(_ => new CrawlerOptions
+        builder.Services.AddSingleton<CrawlerOptions>(_ => new CrawlerOptions
         {
             MaxRps = MaxRps,
             MaxConcurrency = MaxConcurrency

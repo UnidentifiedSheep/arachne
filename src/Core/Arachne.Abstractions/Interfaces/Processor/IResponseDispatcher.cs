@@ -9,5 +9,5 @@ public interface IResponseDispatcher
     /// </summary>
     /// <param name="result"></param>
     /// <returns></returns>
-    Task DispatchAsync(FetcherResult result);
+    Task DispatchAsync(ReadonlyFetcherResult result);
 }

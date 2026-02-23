@@ -1,11 +1,12 @@
 ﻿using Arachne.Abstractions.Interfaces.Fetcher.UserAgent;
 using Arachne.Abstractions.Interfaces.HostBuilderConfigurator;
+using Arachne.Abstractions.Interfaces.HostBuilders;
 using Fetcher.UserAgent;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Arachne.Crawler.App.Builders;
 
-internal class UserAgentConfigurator(IServiceCollection services) : IUserAgentConfigurator
+internal class UserAgentConfigurator : IUserAgentConfigurator, IConfigurator
 {
     public Type UserAgentContainerType { get; private set; } = typeof(UserAgentContainer);
     public Type UserAgentRotatorType { get; private set; } = typeof(RoundRobinUserAgentRotator);
@@ -21,10 +22,10 @@ internal class UserAgentConfigurator(IServiceCollection services) : IUserAgentCo
         UserAgentContainerType = typeof(T);
         return this;
     }
-    
-    public void Build()
+
+    public void Build(IAppHostBuilder builder)
     {
-        services.AddSingleton(typeof(IUserAgentContainer), UserAgentContainerType);
-        services.AddSingleton(typeof(IUserAgentRotator), UserAgentRotatorType);
+        builder.Services.AddSingleton(typeof(IUserAgentContainer), UserAgentContainerType);
+        builder.Services.AddSingleton(typeof(IUserAgentRotator), UserAgentRotatorType);
     }
 }
