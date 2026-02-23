@@ -1,8 +1,8 @@
-﻿using Arachne.Abstractions.Models.Fetcher;
+﻿using Arachne.Contracts.Models;
 
 namespace Arachne.Contracts.Events;
 
 public class FetchCompletedEvent
 {
-    public FetcherResult Result { get; init; } = null!;
+    public required FetcherResult Result { get; init; }
 }

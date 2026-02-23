@@ -9,6 +9,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Core\Arachne.Abstractions\Arachne.Abstractions.csproj" />
       <ProjectReference Include="..\Core\Arachne.Contracts\Arachne.Contracts.csproj" />
+      <ProjectReference Include="..\Core\Arachne.Extensions\Arachne.Extensions.csproj" />
     </ItemGroup>
 
     <ItemGroup>

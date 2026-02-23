@@ -19,6 +19,9 @@ public sealed class FetcherContext
     public IReadOnlyDictionary<string, string> Headers => _headers;
     public IReadOnlyDictionary<string, string> QueryParameters => _queryParameters;
 
+    private readonly HashSet<string> _processorTags = [];
+    public IReadOnlyCollection<string> ProcessorTags => _processorTags;
+    
     public HttpContent? Content { get; private set; }
     public HttpClient? HttpClient { get; private set; }
 
@@ -37,6 +40,12 @@ public sealed class FetcherContext
         DelayMultiplier = delayMultiplier;
         RetryOn = retryOn.ToHashSet();
     }
+    
+    public FetcherContext(Guid id, string url, HttpMethod method, int retryCount = 0, int delayMs = 0, double delayMultiplier = 1, 
+        params HttpStatusCode[] retryOn) : this(url, method, retryCount, delayMs, delayMultiplier, retryOn)
+    {
+        Id = id;
+    }
 
     public FetcherContext WithHeader(string key, string value)
     {
@@ -47,6 +56,29 @@ public sealed class FetcherContext
     public FetcherContext WithQuery(string key, string value)
     {
         _queryParameters[key] = value;
+        return this;
+    }
+
+    /// <summary>
+    /// Adds a processor tag.
+    /// </summary>
+    /// <param name="tag"></param>
+    /// <returns></returns>
+    public FetcherContext WithProcessorTag(string tag)
+    {
+        _processorTags.Add(tag);
+        return this;
+    }
+
+    /// <summary>
+    /// Clears processor tags, and adds new ones.
+    /// </summary>
+    /// <param name="tags"></param>
+    /// <returns></returns>
+    public FetcherContext WithProcessorTags(IEnumerable<string> tags)
+    {
+        _processorTags.Clear();
+        _processorTags.UnionWith(tags);
         return this;
     }
 

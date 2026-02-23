@@ -6,4 +6,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Arachne.Abstractions\Arachne.Abstractions.csproj" />
+      <ProjectReference Include="..\Arachne.Contracts\Arachne.Contracts.csproj" />
+    </ItemGroup>
+
 </Project>

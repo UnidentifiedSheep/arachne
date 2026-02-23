@@ -1,8 +1,10 @@
-﻿using Arachne.Abstractions.Models.Fetcher;
+﻿
+
+using Arachne.Contracts.Models;
 
 namespace Arachne.Contracts.Events;
 
 public class AddCrawlJobEvent
 {
-    public List<FetcherContext> Jobs = [];
+    public required IReadOnlyCollection<FetcherContext> Jobs { get; init; }
 }

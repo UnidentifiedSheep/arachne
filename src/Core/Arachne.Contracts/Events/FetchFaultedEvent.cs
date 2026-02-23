@@ -1,9 +1,9 @@
-﻿using Arachne.Abstractions.Models.Fetcher;
+﻿using Arachne.Contracts.Models;
 
 namespace Arachne.Contracts.Events;
 
 public class FetchFaultedEvent
 {
     public FetcherContext? Context { get; init; }
-    public Exception Exception { get; init; } = null!;
+    public required Exception Exception { get; init; }
 }

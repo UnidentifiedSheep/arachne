@@ -3,6 +3,7 @@ using Arachne.Abstractions.Interfaces.Crawler;
 using Arachne.Abstractions.Interfaces.Fetcher.Pipeline;
 using Arachne.Abstractions.Models.Fetcher;
 using Arachne.Contracts.Events;
+using Arachne.Extensions;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -70,13 +71,13 @@ public sealed class Crawler(IServiceProvider serviceProvider, IRateLimiter rateL
         try
         {
             var result = await pipelineExecutor.ExecutePipeline(context, token);
-            await publishEndpoint.Publish(new FetchCompletedEvent { Result = result }, token);
+            await publishEndpoint.Publish(new FetchCompletedEvent { Result = result.ToContract() }, token);
         }
         catch (Exception ex)
         {
             await publishEndpoint.Publish(new FetchFaultedEvent
             {
-                Context = context,
+                Context = context.ToContract(),
                 Exception = ex
             }, token);
         }
