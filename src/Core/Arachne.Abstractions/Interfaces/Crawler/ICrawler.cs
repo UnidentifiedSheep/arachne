@@ -22,5 +22,5 @@ public interface ICrawler
     /// </summary>
     /// <param name="context">Context for fetch request.</param>
     /// <returns>True if a job was added, otherwise false.</returns>
-    bool AddCrawlJob(FetcherContext context);
+    (Guid, bool) AddCrawlJob(FetcherContext context);
 }

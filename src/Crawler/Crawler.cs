@@ -15,9 +15,9 @@ public sealed class Crawler(IServiceProvider serviceProvider, IRateLimiter rateL
     private readonly List<Task> _runningTasks = [];
     private readonly Lock _tasksLock = new();
     private bool _isAvailable;
-    public bool AddCrawlJob(FetcherContext context)
+    public (Guid, bool) AddCrawlJob(FetcherContext context)
     {
-        if (!_isAvailable) return false;
+        if (!_isAvailable) return (Guid.Empty, false);
         if (logger.IsEnabled(LogLevel.Information)) 
             logger.LogInformation("Adding job {id} to queue. Current rps {rps}", context.Id, rateLimiter.CurrentRps);
         var task = ProcessSingleAsync(context, CancellationToken.None);
@@ -27,7 +27,7 @@ public sealed class Crawler(IServiceProvider serviceProvider, IRateLimiter rateL
 
         _ = TrackCompletionAsync(task);
 
-        return true;
+        return (context.Id, true);
     }
 
     public Task StartAsync(CancellationToken token = default)
