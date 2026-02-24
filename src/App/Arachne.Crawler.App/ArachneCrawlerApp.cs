@@ -18,7 +18,7 @@ public sealed class ArachneCrawlerApp : BaseApp
     
     public override async Task RunAsync(CancellationToken token = default)
     {
-        await RunBus(token);
+        await RunHostedServices(token);
         var crawler = _provider.GetRequiredService<ICrawler>();
         await crawler.StartAsync(token);
 

@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arachne.App.Base", "src\App
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arachne.Extensions", "src\Core\Arachne.Extensions\Arachne.Extensions.csproj", "{99F26633-CF89-4CE2-9560-550646BA9827}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ForTests", "src\ForTests\ForTests.csproj", "{C387982D-3FA6-4E83-A828-A8E38B9A7813}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -84,6 +86,10 @@ Global
 		{99F26633-CF89-4CE2-9560-550646BA9827}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99F26633-CF89-4CE2-9560-550646BA9827}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99F26633-CF89-4CE2-9560-550646BA9827}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C387982D-3FA6-4E83-A828-A8E38B9A7813}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C387982D-3FA6-4E83-A828-A8E38B9A7813}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C387982D-3FA6-4E83-A828-A8E38B9A7813}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C387982D-3FA6-4E83-A828-A8E38B9A7813}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{873BE23D-F4FD-4053-87F4-95F4C20EA85D} = {CC0A6039-2686-451A-904F-03F3C65117FE}

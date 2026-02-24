@@ -1,85 +1,80 @@
-﻿using System.Threading.Channels;
-using Arachne.Abstractions.Interfaces.Crawler;
+﻿using Arachne.Abstractions.Interfaces.Crawler;
 using Arachne.Abstractions.Interfaces.Fetcher.Pipeline;
 using Arachne.Abstractions.Models.Fetcher;
 using Arachne.Contracts.Events;
 using Arachne.Extensions;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Crawler;
 
-public sealed class Crawler(IServiceProvider serviceProvider, IRateLimiter rateLimiter, IConcurrencyLimiter concurrencyLimiter) 
-    : ICrawler, IAsyncDisposable
+public sealed class Crawler(IServiceProvider serviceProvider, IRateLimiter rateLimiter, IConcurrencyLimiter concurrencyLimiter,
+    ICrawlerMetrics metrics, ILogger<Crawler> logger) : ICrawler, IAsyncDisposable
 {
-    private readonly Channel<FetcherContext> _channel = Channel.CreateUnbounded<FetcherContext>();
-
     private readonly List<Task> _runningTasks = [];
     private readonly Lock _tasksLock = new();
-
-    private CancellationTokenSource? _cts;
-    private Task? _processingTask;
-
+    private bool _isAvailable;
     public bool AddCrawlJob(FetcherContext context)
     {
-        return _channel.Writer.TryWrite(context);
+        if (!_isAvailable) return false;
+        if (logger.IsEnabled(LogLevel.Information)) 
+            logger.LogInformation("Adding job {id} to queue. Current rps {rps}", context.Id, rateLimiter.CurrentRps);
+        var task = ProcessSingleAsync(context, CancellationToken.None);
+
+        lock (_tasksLock)
+            _runningTasks.Add(task);
+
+        _ = TrackCompletionAsync(task);
+
+        return true;
     }
 
     public Task StartAsync(CancellationToken token = default)
     {
-        if (_processingTask != null)
-            return _processingTask;
-
-        _cts = CancellationTokenSource.CreateLinkedTokenSource(token);
-        _processingTask = Task.Run(() => ProcessQueueAsync(_cts.Token), token);
+        if (logger.IsEnabled(LogLevel.Information)) 
+            logger.LogInformation("Starting crawler.");
+        _isAvailable = true;
         return Task.CompletedTask;
     }
 
     public async Task StopAsync()
     {
-        _channel.Writer.Complete();
-
-        if (_processingTask != null) await _processingTask;
-
+        _isAvailable = false;
         Task[] remaining;
         lock (_tasksLock) remaining = _runningTasks.ToArray();
-
+        
         await Task.WhenAll(remaining);
-    }
-
-    private async Task ProcessQueueAsync(CancellationToken token)
-    {
-        await foreach (var context in _channel.Reader.ReadAllAsync(token))
-        {
-            await rateLimiter.WaitTillAllowed();
-
-            var task = ProcessSingleAsync(context, token);
-
-            lock (_tasksLock) _runningTasks.Add(task);
-
-            _ = TrackCompletionAsync(task);
-        }
     }
 
     private async Task ProcessSingleAsync(FetcherContext context, CancellationToken token)
     {
-        using var lease = await concurrencyLimiter.WaitAsync(token);
+        await rateLimiter.WaitTillAllowed().ConfigureAwait(false);
+        using var lease = await concurrencyLimiter.WaitAsync(token).ConfigureAwait(false);
+        
+        // ReSharper disable once InconsistentlySynchronizedField
+        metrics.SetQueueLength(_runningTasks.Count);
+        
+        using var taskTimer = metrics.MeasureTaskTime();
         await using var scope = serviceProvider.CreateAsyncScope();
         var publishEndpoint = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
         var pipelineExecutor = scope.ServiceProvider.GetRequiredService<IPipelineExecutor>();
         
         try
         {
-            var result = await pipelineExecutor.ExecutePipeline(context, token);
-            await publishEndpoint.Publish(new FetchCompletedEvent { Result = result.ToContract() }, token);
+            var result = await pipelineExecutor.ExecutePipeline(context, token).ConfigureAwait(false);
+            await publishEndpoint.Publish(new FetchCompletedEvent { Result = result.ToContract() }, token)
+                .ConfigureAwait(false);
+            metrics.IncrementSuccess();
         }
         catch (Exception ex)
         {
             await publishEndpoint.Publish(new FetchFaultedEvent
             {
                 Context = context.ToContract(),
-                Exception = ex
-            }, token);
+                Exception = ex.Message
+            }, token).ConfigureAwait(false);
+            metrics.IncrementFailure();
         }
     }
 
@@ -87,7 +82,7 @@ public sealed class Crawler(IServiceProvider serviceProvider, IRateLimiter rateL
     {
         try
         {
-            await task;
+            await task.ConfigureAwait(false);
         }
         finally
         {
@@ -98,9 +93,6 @@ public sealed class Crawler(IServiceProvider serviceProvider, IRateLimiter rateL
 
     public async ValueTask DisposeAsync()
     {
-        if (_cts != null) await _cts.CancelAsync();
-
         await StopAsync();
-        _cts?.Dispose();
     }
 }

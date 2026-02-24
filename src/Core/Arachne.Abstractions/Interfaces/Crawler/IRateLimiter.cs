@@ -8,9 +8,9 @@ public interface IRateLimiter
     int MaxRps { get; }
     
     /// <summary>
-    /// Current requests per second.
+    /// Avrg rps.
     /// </summary>
-    int CurrentRps { get; }
+    double CurrentRps { get; }
     
     /// <summary>
     /// Changes max allowed requests per second.

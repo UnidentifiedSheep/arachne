@@ -19,6 +19,7 @@ internal class FetcherConfigurator : IFetcherConfigurator, IConfigurator
     public void Build(IAppHostBuilder builder)
     {
         builder.Services.AddScoped<IPipelineExecutor, PipelineExecutor>();
+        builder.Services.AddHttpClient();
         foreach (var middleware in _middlewares)
             builder.Services.Add(new ServiceDescriptor(typeof(IFetcherMiddleware), middleware.Item1, middleware.Item2));
     }

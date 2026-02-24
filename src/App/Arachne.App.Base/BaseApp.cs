@@ -3,6 +3,7 @@ using Arachne.Abstractions.Interfaces.App;
 using Arachne.App.Base.ExceptionHandlers;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Arachne.App.Base;
 
@@ -49,6 +50,24 @@ public abstract class BaseApp : IApp
     {
         services.AddSingleton<BasicExceptionHandler>();
         services.AddSingleton<IExceptionHandler>(sp => sp.GetRequiredService<BasicExceptionHandler>());
+    }
+
+    protected async Task RunHostedServices(CancellationToken token = default)
+    {
+        var hostedServices = Services.GetServices<IHostedService>();
+        foreach (var service in hostedServices) await service.StartAsync(token);
+    }
+    
+    protected async Task RunHostedService<THostedService>(CancellationToken token = default) where THostedService : IHostedService
+    {
+        var hostedService = Services.GetRequiredService<THostedService>();
+        await hostedService.StartAsync(token);
+    }
+
+    protected async Task StopHostedServices(CancellationToken token = default)
+    {
+        var hostedServices = Services.GetServices<IHostedService>();
+        foreach (var service in hostedServices) await service.StopAsync(token);
     }
 
     protected async Task RunBus(CancellationToken token = default)

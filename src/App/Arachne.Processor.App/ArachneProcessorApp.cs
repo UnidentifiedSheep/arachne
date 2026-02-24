@@ -15,7 +15,7 @@ public sealed class ArachneProcessorApp : BaseApp
 
     public override async Task RunAsync(CancellationToken cancellationToken = default)
     {
-        await RunBus(cancellationToken);
+        await RunHostedServices(cancellationToken);
         await Task.Delay(Timeout.Infinite, cancellationToken);
     }
     

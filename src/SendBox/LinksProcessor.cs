@@ -1,7 +1,7 @@
-﻿using System.Text.RegularExpressions;
-using Arachne.Abstractions.Interfaces.Processor;
+﻿using Arachne.Abstractions.Interfaces.Processor;
 using Arachne.Abstractions.Models.Fetcher;
 using Arachne.Contracts.Events;
+using HtmlAgilityPack;
 using MassTransit;
 
 using FetcherContext = Arachne.Contracts.Models.FetcherContext;
@@ -14,41 +14,44 @@ public class LinksProcessor(IPublishEndpoint publishEndpoint) : IResponseProcess
 
     public async Task ProcessResponseAsync(ReadonlyFetcherResult result, CancellationToken cancellationToken = default)
     {
-        if (result.Result == null) return;
+        if (string.IsNullOrWhiteSpace(result.Result))
+            return;
+
         var links = ProcessHtml(result.Result);
+
+        if (!links.Any())
+            return;
+
+        var jobs = links.Select(x => new FetcherContext
+        {
+            Id = Guid.NewGuid(),
+            Url = x,
+            Method = HttpMethod.Get.Method,
+            ProcessorTags = ["links"]
+        }).ToList();
 
         await publishEndpoint.Publish(new AddCrawlJobEvent
         {
-            Jobs = links.Select(x => new FetcherContext
-            {
-                Id = Guid.NewGuid(),
-                Url = x,
-                Method = HttpMethod.Get.Method,
-                ProcessorTags = ["links"]
-            }).ToList()
+            Jobs = jobs
         }, cancellationToken);
     }
-    
-    private static readonly Regex AnchorHrefRegex = new(
-        @"<a\b[^>]*?\bhref\s*=\s*(?:""(?<url>[^""]*)""|'(?<url>[^']*)'|(?<url>[^\s>]+))",
-        RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-    private string[] ProcessHtml(string html)
+    private static string[] ProcessHtml(string html)
     {
-        if (string.IsNullOrWhiteSpace(html))
-            return Array.Empty<string>();
+        var doc = new HtmlDocument();
+        doc.LoadHtml(html);
 
-        var matches = AnchorHrefRegex.Matches(html);
+        var linkNodes = doc.DocumentNode.SelectNodes("//a[@href]");
+        if (linkNodes.Count == 0) return [];
 
-        var result = new List<string>(matches.Count);
-
-        foreach (Match match in matches)
+        var urls = new List<string>(linkNodes.Count);
+        foreach (var node in linkNodes)
         {
-            var url = match.Groups["url"].Value;
-            if (!string.IsNullOrWhiteSpace(url))
-                result.Add(url);
+            var href = node.GetAttributeValue("href", string.Empty);
+            if (!string.IsNullOrWhiteSpace(href) && Uri.TryCreate(href, UriKind.Absolute, out _))
+                urls.Add(href);
         }
 
-        return result.ToArray();
+        return urls.ToArray();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Text;
+using System.Web;
 
 namespace Arachne.Abstractions.Models.Fetcher;
 
@@ -14,7 +15,7 @@ public sealed class FetcherContext
     public double DelayMultiplier { get; }
 
     private readonly Dictionary<string, string> _headers = new();
-    private readonly Dictionary<string, string> _queryParameters = new();
+    private readonly Dictionary<string, string> _queryParameters;
     
     public IReadOnlyDictionary<string, string> Headers => _headers;
     public IReadOnlyDictionary<string, string> QueryParameters => _queryParameters;
@@ -39,6 +40,25 @@ public sealed class FetcherContext
         DelayMs = delayMs;
         DelayMultiplier = delayMultiplier;
         RetryOn = retryOn.ToHashSet();
+
+        (Url, _queryParameters) = ParseQueryParametersFromUrl(url);
+    }
+    
+    private (string path, Dictionary<string, string> query) ParseQueryParametersFromUrl(string url)
+    {
+        if (string.IsNullOrWhiteSpace(url)) return (url, new Dictionary<string, string>());
+
+        var uri = new Uri(url);
+        var query = HttpUtility.ParseQueryString(uri.Query);
+        var dict = new Dictionary<string, string>();
+        foreach (string? key in query.AllKeys)
+        {
+            if (key != null)
+                dict[key] = query[key]!;
+        }
+
+        var path = uri.GetLeftPart(UriPartial.Path);
+        return (path, dict);
     }
     
     public FetcherContext(Guid id, string url, HttpMethod method, int retryCount = 0, int delayMs = 0, double delayMultiplier = 1, 
@@ -119,7 +139,7 @@ public sealed class FetcherContext
             return Url;
 
         var uriBuilder = new UriBuilder(Url);
-        var query = System.Web.HttpUtility.ParseQueryString(uriBuilder.Query);
+        var query = HttpUtility.ParseQueryString(uriBuilder.Query);
 
         foreach (var kv in _queryParameters)
             query[kv.Key] = kv.Value;
