@@ -7,10 +7,15 @@ namespace Arachne.Processor.App;
 
 public class ArachneProcessorHostBuilder : AppHostBuilder<ArachneProcessorApp>
 {
-    public override IServiceCollection Services { get; } = new ServiceCollection();
+    public override IServiceCollection Services { get; }
     private bool _built;
     private readonly ProcessorConfigurator _processorConfigurator = new ProcessorConfigurator();
 
+    public ArachneProcessorHostBuilder(IServiceCollection services)
+    {
+        Services = services;
+    }
+    public ArachneProcessorHostBuilder() : this(new ServiceCollection()) { }
 
     public ArachneProcessorHostBuilder WithProcessorConfigurator(Action<IProcessorConfigurator> configureProcessor)
     {

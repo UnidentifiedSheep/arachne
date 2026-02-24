@@ -7,7 +7,13 @@ namespace Arachne.Crawler.App;
 
 public sealed class ArachneCrawlerHostBuilder : AppHostBuilder<ArachneCrawlerApp>
 {
-    public override IServiceCollection Services { get; } = new ServiceCollection();
+    public override IServiceCollection Services { get; }
+
+    public ArachneCrawlerHostBuilder(IServiceCollection services)
+    {
+        Services = services;
+    }
+    public ArachneCrawlerHostBuilder() : this(new ServiceCollection()) { }
 
     private bool _built;
     

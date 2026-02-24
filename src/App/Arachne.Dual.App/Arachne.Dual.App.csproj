@@ -6,4 +6,17 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\Messaging\Messaging.InMemory\Messaging.InMemory.csproj" />
+      <ProjectReference Include="..\Arachne.App.Base\Arachne.App.Base.csproj" />
+      <ProjectReference Include="..\Arachne.Crawler.App\Arachne.Crawler.App.csproj" />
+      <ProjectReference Include="..\Arachne.Processor.App\Arachne.Processor.App.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MassTransit" Version="8.5.8" />
+      <PackageReference Include="MassTransit.Abstractions" Version="8.5.8" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
+    </ItemGroup>
+
 </Project>
