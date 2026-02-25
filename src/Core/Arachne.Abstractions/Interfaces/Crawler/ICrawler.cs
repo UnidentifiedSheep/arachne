@@ -1,26 +1,16 @@
-﻿using Arachne.Abstractions.Models.Fetcher;
+﻿using System.Threading.Channels;
+using Arachne.Abstractions.Models.Fetcher;
 
 namespace Arachne.Abstractions.Interfaces.Crawler;
 
-public interface ICrawler
+public interface ICrawler : IAsyncDisposable
 {
-    /// <summary>
-    /// Starts crawling process.
-    /// </summary>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    Task StartAsync(CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Stops crawling process.
-    /// </summary>
-    /// <returns></returns>
-    Task StopAsync();
+    ChannelReader<FetcherContext> Reader { get; }
 
     /// <summary>
     /// Adds a crawl job to the queue and starts a crawling process if not started yet.
     /// </summary>
     /// <param name="context">Context for fetch request.</param>
     /// <returns>True if a job was added, otherwise false.</returns>
-    (Guid, bool) AddCrawlJob(FetcherContext context);
+    ValueTask<(bool, Guid)> AddCrawlJob(FetcherContext context);
 }

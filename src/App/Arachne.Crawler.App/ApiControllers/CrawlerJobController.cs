@@ -37,7 +37,7 @@ public sealed class CrawlerJobController(ICrawler crawler) : WebApiController
         crawlJob.WithProcessorTags(data.ProcessorTags);
         foreach (var (key, value) in data.Headers) crawlJob.WithHeader(key, value);
         foreach (var (key, value) in data.QueryParameters) crawlJob.WithQuery(key, value);
-        var (id, succ) = crawler.AddCrawlJob(crawlJob);
+        var (succ, id) = await crawler.AddCrawlJob(crawlJob);
         return new AddCrawlerJobResult { Success = succ, Id = id };
     }
 

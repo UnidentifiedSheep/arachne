@@ -1,5 +1,4 @@
-﻿using Arachne.Abstractions.Interfaces.Crawler;
-using Arachne.App.Base;
+﻿using Arachne.App.Base;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Arachne.Dual.App;
@@ -18,8 +17,6 @@ public sealed class ArachneDualApp : BaseApp
     public override async Task RunAsync(CancellationToken token = default)
     {
         await RunHostedServices(token);
-        var crawler = _provider.GetRequiredService<ICrawler>();
-        await crawler.StartAsync(token);
         await Task.Delay(Timeout.Infinite, token);
     }
 

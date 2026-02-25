@@ -19,19 +19,18 @@ public sealed class ArachneCrawlerHostBuilder : AppHostBuilder<ArachneCrawlerApp
     
     private readonly ProxyConfigurator _proxyConfigurator = new();
     private readonly UserAgentConfigurator _agentConfigurator = new();
-    private readonly FetcherConfigurator _fetcherConfigurator = new();
     private readonly CrawlerConfigurator _crawlerConfigurator = new();
-    private readonly CrawlerOptionsConfigurator _crawlerOptionsConfigurator = new();
-
-    public ArachneCrawlerHostBuilder ConfigureFetcher(Action<IFetcherConfigurator> configureFetcher)
-    {
-        configureFetcher(_fetcherConfigurator);
-        return this;
-    }
+    private readonly FetcherConfigurator _fetcherConfigurator = new();
 
     public ArachneCrawlerHostBuilder ConfigureProxy(Action<IProxyConfigurator> proxyConfig)
     {
         proxyConfig(_proxyConfigurator);
+        return this;
+    }
+    
+    public ArachneCrawlerHostBuilder ConfigureFetcher(Action<IFetcherConfigurator> configureFetcher)
+    {
+        configureFetcher(_fetcherConfigurator);
         return this;
     }
     
@@ -46,12 +45,6 @@ public sealed class ArachneCrawlerHostBuilder : AppHostBuilder<ArachneCrawlerApp
         crawlerConfig(_crawlerConfigurator);
         return this;
     }
-    
-    public ArachneCrawlerHostBuilder ConfigureCrawlerOptions(Action<ICrawlerOptionsConfigurator> crawlerOptionsConfig)
-    {
-        crawlerOptionsConfig(_crawlerOptionsConfigurator);
-        return this;
-    }
 
     public override ArachneCrawlerApp Build()
     {
@@ -61,7 +54,6 @@ public sealed class ArachneCrawlerHostBuilder : AppHostBuilder<ArachneCrawlerApp
         _proxyConfigurator.Build(this);
         _agentConfigurator.Build(this);
         _crawlerConfigurator.Build(this);
-        _crawlerOptionsConfigurator.Build(this);
         _fetcherConfigurator.Build(this);
         
         return new ArachneCrawlerApp(Services);

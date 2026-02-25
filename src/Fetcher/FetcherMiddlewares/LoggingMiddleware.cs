@@ -2,29 +2,33 @@
 using Arachne.Abstractions.Models.Fetcher;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using Arachne.Abstractions.Interfaces.Crawler;
 
 namespace Fetcher.FetcherMiddlewares;
 
-public class LoggingMiddleware(ILogger<LoggingMiddleware> logger) : IFetcherMiddleware
+public class LoggingMiddleware(ILogger<LoggingMiddleware> logger, ICrawlerMetrics metrics, IRateLimiter rateLimiter) 
+    : IFetcherMiddleware
 {
+    private static long _requestCount;
     public async Task<FetcherResult> InvokeAsync(FetcherContext context, CancellationToken token, FetcherDelegate next)
     {
-        if (!logger.IsEnabled(LogLevel.Information))
-            return await next(context, token);
-
-        var stopwatch = Stopwatch.StartNew();
-        var startTime = DateTime.UtcNow;
-
-        logger.LogInformation("[{id}] Starting HTTP {method} request to {url} at {time}", 
-            context.Id, context.Method, context.Url, startTime);
-
         var result = await next(context, token);
-        stopwatch.Stop();
+        if (!logger.IsEnabled(LogLevel.Information) || Interlocked.Increment(ref _requestCount) % 5000 != 0)
+            return result;
 
-        logger.LogInformation("[{id}] Completed HTTP {method} request to {url} at {time} in {duration}ms. Status: {status}", 
-            context.Id, context.Method, context.Url, DateTime.UtcNow, stopwatch.ElapsedMilliseconds, result.StatusCode);
+        logger.LogInformation(
+            """
+            Processed {count} requests. Last request: {method} {url} Status: {status}.
+            QueueLength: {queue}, Success: {success}, Failure: {failure},
+            AvgRunTime: {avg}ms, MaxRunTime: {max}ms, MinRunTime: {min}ms,
+            Current Rps: {rps}
+            """,
+            _requestCount, context.Method, context.Url, result.StatusCode,
+            metrics.QueueLength, metrics.SuccessCount, metrics.FailureCount,
+            metrics.AverageRunTimeMs, metrics.MaxRunTimeMs, metrics.MinRunTimeMs,
+            rateLimiter.CurrentRps
+        );
         
         return result;
-        
     }
 }

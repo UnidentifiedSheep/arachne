@@ -11,7 +11,7 @@ public class CrawlerOptions
             field = value;
         }
     } = int.MaxValue;
-    public int MaxConcurrency 
+    public int WorkerCount 
     { 
         get;
         init
@@ -19,5 +19,5 @@ public class CrawlerOptions
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value);
             field = value;
         }
-    } = 1;
+    } = 5;
 }

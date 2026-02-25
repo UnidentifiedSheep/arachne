@@ -10,7 +10,6 @@ public interface ICrawlerMetrics
     int QueueLength { get; }
     void IncrementSuccess();
     void IncrementFailure();
-    void SetQueueLength(int length);
     void AddTaskRunTime(long ms);
     IDisposable MeasureTaskTime();
 }
