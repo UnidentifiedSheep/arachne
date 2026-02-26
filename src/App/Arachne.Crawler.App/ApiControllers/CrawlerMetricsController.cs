@@ -16,7 +16,7 @@ public class GetCrawlerMetricsResult
     public double Rps { get; init; }
 }
 
-public class CrawlerMetricsController(ICrawlerMetrics crawlerMetrics, IRateLimiter rateLimiter) : WebApiController
+public class CrawlerMetricsController(ICrawlerMetrics crawlerMetrics) : WebApiController
 {
     [Route(HttpVerbs.Get, "/metrics")]
     public GetCrawlerMetricsResult GetMetrics()
@@ -29,7 +29,7 @@ public class CrawlerMetricsController(ICrawlerMetrics crawlerMetrics, IRateLimit
             SuccessCount = crawlerMetrics.SuccessCount,
             FailureCount = crawlerMetrics.FailureCount,
             QueueLength = crawlerMetrics.QueueLength,
-            Rps = rateLimiter.CurrentRps
+            Rps = crawlerMetrics.Rps
         };
     }
 }

@@ -8,6 +8,7 @@ public interface ICrawlerMetrics
     long SuccessCount { get; }
     long FailureCount { get; }
     int QueueLength { get; }
+    double Rps { get; }
     void IncrementSuccess();
     void IncrementFailure();
     void AddTaskRunTime(long ms);

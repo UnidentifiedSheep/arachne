@@ -9,11 +9,13 @@ public sealed class CrawlerMetrics : ICrawlerMetrics
     private readonly MetricsBucket[] _buckets = new MetricsBucket[WindowSizeSeconds];
     private int _currentIndex;
     private long _lastTimestampMs;
-    private ICrawler _crawler;
+    private readonly ICrawler _crawler;
+    private readonly IRateLimiter _rateLimiter;
 
-    public CrawlerMetrics(ICrawler crawler)
+    public CrawlerMetrics(ICrawler crawler, IRateLimiter rateLimiter)
     {
         _crawler = crawler;
+        _rateLimiter = rateLimiter;
         var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         _lastTimestampMs = now;
         for (int i = 0; i < WindowSizeSeconds; i++)
@@ -104,6 +106,7 @@ public sealed class CrawlerMetrics : ICrawlerMetrics
 
     private long _successCount;
     public long SuccessCount => Volatile.Read(ref _successCount);
+    public double Rps => _rateLimiter.CurrentRps;
     public void IncrementSuccess() => Interlocked.Increment(ref _successCount);
 
     private long _failureCount;

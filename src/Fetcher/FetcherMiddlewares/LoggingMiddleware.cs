@@ -1,12 +1,11 @@
 ﻿using Arachne.Abstractions.Interfaces.Fetcher;
 using Arachne.Abstractions.Models.Fetcher;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 using Arachne.Abstractions.Interfaces.Crawler;
 
 namespace Fetcher.FetcherMiddlewares;
 
-public class LoggingMiddleware(ILogger<LoggingMiddleware> logger, ICrawlerMetrics metrics, IRateLimiter rateLimiter) 
+public class LoggingMiddleware(ILogger<LoggingMiddleware> logger, ICrawlerMetrics metrics) 
     : IFetcherMiddleware
 {
     private static long _requestCount;
@@ -26,7 +25,7 @@ public class LoggingMiddleware(ILogger<LoggingMiddleware> logger, ICrawlerMetric
             _requestCount, context.Method, context.Url, result.StatusCode,
             metrics.QueueLength, metrics.SuccessCount, metrics.FailureCount,
             metrics.AverageRunTimeMs, metrics.MaxRunTimeMs, metrics.MinRunTimeMs,
-            rateLimiter.CurrentRps
+            metrics.Rps
         );
         
         return result;

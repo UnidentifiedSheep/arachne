@@ -33,8 +33,7 @@ public class ApiBackgroundService : BackgroundService
             }).WithController(() =>
             {
                 var crawlerMetrics = sp.GetRequiredService<ICrawlerMetrics>();
-                var rateLimiter = sp.GetRequiredService<IRateLimiter>();
-                return new CrawlerMetricsController(crawlerMetrics, rateLimiter);
+                return new CrawlerMetricsController(crawlerMetrics);
             }))
             .WithModule(new ActionModule("/", HttpVerbs.Any, 
                 ctx => ctx.SendDataAsync(new { Message = "Error" })));
